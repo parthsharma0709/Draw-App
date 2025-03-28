@@ -1,5 +1,5 @@
 import express , { NextFunction, Response, Request } from "express";
-import { JWT_SECRET } from "../config";
+import { JWT_SECRET } from "@repo/backend-common/config"
 import jwt , {JwtPayload } from "jsonwebtoken"
 
 export function userAuthentication(req:Request,res:Response,next:NextFunction){

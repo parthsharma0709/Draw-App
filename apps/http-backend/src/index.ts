@@ -1,34 +1,11 @@
 import  express , {Request, Response} from "express";
 const app =express();
 app.use(express.json());
-import { JWT_SECRET } from "./config";
+import { JWT_SECRET } from "@repo/backend-common/config"
 import {z} from "zod"
 import bcrypt from "bcrypt"
 import { userAuthentication } from "./auth/user-auth";
-
-const usernameSchema= z.string().min(3,"username must have at least 3 characters").max(20);
-const passwordSchema= z.string()
-.min(8, "Password must be between 8 and 20 characters")
-.max(20)
-.regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-.regex(/[a-z]/, "Password must contain at least one lowercase letter")
-.regex(/[0-9]/, "Password must contain at least one number")
-.regex(/[^A-Za-z0-9]/, "Password must contain at least one special character");
-
-const FirstNameSchema= z.string().min(3,"FirstName must have at least 3 characters").max(20);
-const LastNameSchema= z.string().min(3,"FirstName must have at least 3 characters").max(20);
-
-const SignUpSchema= z.object({
-    username:usernameSchema,
-    password:passwordSchema,
-    FirstName:FirstNameSchema,
-    LastName:LastNameSchema
-});
-
-const SignInSchema= z.object({
-    username:usernameSchema,
-    password:passwordSchema,
-});
+import {SignInSchema,usernameSchema,passwordSchema,SignUpSchema,FirstNameSchema,LastNameSchema} from "@repo/common/types"
 
 const hashPassword= async(password:string): Promise<string> =>{
     const saltRound= 10;
