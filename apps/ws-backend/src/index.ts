@@ -13,10 +13,16 @@ wss.on('connection',function connection(ws, req:IncomingMessage){
     if(!url){
         return;
     }
-    const { query } = parse(req.url!, true);
-    const token = query.token as string;
+    const { query } = parse(url, true);
 
-    const decoded= jwt.verify(token as string, JWT_SECRET) as JwtPayload;
+    const token = query.token?.toString();
+    if (!token) {
+        console.error("Token is missing");
+        return;
+    }
+    
+
+    const decoded= jwt.verify(token , JWT_SECRET) as JwtPayload;
          
     if(!decoded || !(decoded as JwtPayload).userId){
         ws.close();
