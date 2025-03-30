@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc -b && node ./dist/index.js",
+    "dev": "tsc -b && nodemon ./dist/index.js",
     "build": "tsc -b",
     "start": "node ./dist/index.js"
   },
@@ -21,7 +21,8 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@repo/backend-common":"workspace:*",
-    "@repo/common":"workspace:*"
+    "@repo/common":"workspace:*",
+     "@repo/db":"workspace:*"
   },
   "keywords": [],
   "author": "",
