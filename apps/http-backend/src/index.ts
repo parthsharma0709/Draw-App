@@ -8,6 +8,13 @@ import jwt from "jsonwebtoken"
 import { userAuthentication } from "./auth/user-auth";
 import {SignInSchema,emailSchema,passwordSchema,SignUpSchema,nameSchema,RoomSchema} from "@repo/common/types"
 import {prismaClient} from "@repo/db/client"
+const cors= require("cors");
+
+app.use(cors({
+    origin: 'http://localhost:3000', 
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization'
+}));
 
 const hashPassword= async(password:string): Promise<string> =>{
     const saltRound= 10;
@@ -104,25 +111,42 @@ const RoomHandler= async (req:Request,res:Response) : Promise<void> =>{
 const messageHandlers= async (req:Request,res:Response):Promise<void> =>{
 
     const roomId= Number(req.params.roomId);
-
+ 
     const yourMessages= await prismaClient.chat.findMany({
         where:{
-            roomId:roomId
+            roomId
         },
         orderBy:{
             id:"desc"
         },
         take:50
     });
+    
     res.json({messages:"here are your messages", "texts": yourMessages})
 
+}
+
+const getIdHandler= async (req:Request, res:Response):Promise<void> =>{
+    const slug= req.params.slug;
+    const room= await prismaClient.room.findFirst({
+        where:{
+            slug
+        }
+    });
+    if(!room){
+        res.json({message:"room with this slug doesn't exists"});
+        return;
+    }
+
+    res.status(201).json({id:room.id})
 }
 
 
 app.post('/api/v1/user/signup',SignUpHandler);
 app.post('/api/v1/user/signin',SignInHandler);
 app.post('/api/v1/user/room',userAuthentication, RoomHandler);
-app.get('/api/v1/user/chats/:roomId' , userAuthentication,messageHandlers)
+app.get('/api/v1/user/chats/:roomId' ,messageHandlers);
+app.get('/api/v1/user/room/:slug',  getIdHandler)
 app.listen(3001,()=>{
     console.log("http server is  listening on port:3001")
 })
