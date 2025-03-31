@@ -101,14 +101,28 @@ const RoomHandler= async (req:Request,res:Response) : Promise<void> =>{
     
 }
 
+const messageHandlers= async (req:Request,res:Response):Promise<void> =>{
 
+    const roomId= Number(req.params.roomId);
 
+    const yourMessages= await prismaClient.chat.findMany({
+        where:{
+            roomId:roomId
+        },
+        orderBy:{
+            id:"desc"
+        },
+        take:50
+    });
+    res.json({messages:"here are your messages", "texts": yourMessages})
 
+}
 
 
 app.post('/api/v1/user/signup',SignUpHandler);
 app.post('/api/v1/user/signin',SignInHandler);
 app.post('/api/v1/user/room',userAuthentication, RoomHandler);
+app.get('/api/v1/user/chats/:roomId' , userAuthentication,messageHandlers)
 app.listen(3001,()=>{
     console.log("http server is  listening on port:3001")
 })
