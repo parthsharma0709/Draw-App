@@ -1,6 +1,6 @@
 import ChatRoom from "../../components/ChatRoom";
 
-async function getRoom(slug: string) {
+async function getRoomId(slug: string) {
     const response = await fetch(`http://localhost:3001/api/v1/user/room/${slug}`);
     if (!response.ok) {
       return null;
@@ -10,7 +10,8 @@ async function getRoom(slug: string) {
   }
   
   export default async function SlugPage({ params }: { params: { slug: string } }) {
-    const roomId = await getRoom(params.slug);
+    const slug=   params.slug;
+    const roomId = await getRoomId(slug);
   
     if (!roomId) {
       return <div>Room not found</div>;
