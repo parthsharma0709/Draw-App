@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken"
 import { userAuthentication } from "./auth/user-auth";
 import {SignInSchema,emailSchema,passwordSchema,SignUpSchema,nameSchema,RoomSchema} from "@repo/common/types"
 import {prismaClient} from "@repo/db/client"
-const cors= require("cors");
+import cors from "cors";
 
 app.use(cors({
     origin: 'http://localhost:3000', 
