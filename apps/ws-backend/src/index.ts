@@ -94,7 +94,7 @@ wss.on('connection',function connection(ws, req:IncomingMessage){
                 }
             });
 
-
+         // broadcasting the message
             users.forEach(user =>{
                 if(user.rooms.includes(roomId)){
                     user.ws.send(JSON.stringify({

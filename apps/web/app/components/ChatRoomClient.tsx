@@ -49,7 +49,7 @@ export function ChatRoomClient({ params }: { params: { roomId: string; messages:
             ))}
             <input 
                 type="text" 
-                placeholder="Send messages" 
+                placeholder="Enter messages" 
                 value={currentMessage} 
                 onChange={(e) => setCurrentMessage(e.target.value)} 
             />
