@@ -17,6 +17,7 @@ export default function SignUp(){
         const photo= photoRef.current?.value;
 
         try{
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const response= await axios.post("http://localhost:3001/api/v1/user/signup",{
                 email,
                 password,
