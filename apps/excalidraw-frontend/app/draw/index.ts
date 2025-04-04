@@ -80,6 +80,11 @@ async function getExistingShapes(roomId:string){
         return;
     }
 
+
+
+
+    
+
     const messages= response.data.texts;
     const shapes= messages.map((msg: { message: string; })=>{
         const messageData= JSON.parse(msg.message);
