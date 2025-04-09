@@ -11,10 +11,16 @@ import {prismaClient} from "@repo/db/client"
 import cors from "cors";
 
 app.use(cors({
-    origin: 'http://localhost:3005', 
-    methods: 'GET,POST,PUT,DELETE',
-    allowedHeaders: 'Content-Type,Authorization'
-}));
+    origin: function (origin, callback) {
+      if (!origin || origin.startsWith('http://localhost')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    // other options...
+  }));
+  
 
 const hashPassword= async(password:string): Promise<string> =>{
     const saltRound= 10;
