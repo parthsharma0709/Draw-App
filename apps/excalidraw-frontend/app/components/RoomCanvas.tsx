@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react";
 import { WS_URL } from "../config";
 import Canvas from "./canvas";
@@ -8,9 +10,13 @@ export function RoomCanvas({roomId}:{roomId:string}){
 
     useEffect(()=>{
         const token= localStorage.getItem("token");
-        const ws= new WebSocket(`WS_URL?token=${token}`);
+        const ws= new WebSocket(`ws://localhost:8080?token=${token}`);
         ws.onopen =()=>{
             setSocket(ws);
+            ws.send(JSON.stringify({
+                type:"join_room",
+                roomId:roomId
+            }))
         }
     },[]);
 
@@ -20,6 +26,6 @@ export function RoomCanvas({roomId}:{roomId:string}){
         </div>
     }
     return <div>
-        <Canvas roomId={roomId}/>
+        <Canvas roomId={roomId} socket={socket}/>
     </div>
 }

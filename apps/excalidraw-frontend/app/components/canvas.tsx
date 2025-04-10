@@ -4,7 +4,8 @@ import { initDraw } from "../draw";
 
 
 
-export default function Canvas({roomId}:{roomId:string}){
+
+export default function Canvas({roomId,socket}:{roomId:string,socket:WebSocket}){
     const canvasRef= useRef<HTMLCanvasElement>(null);
   
 
@@ -14,7 +15,7 @@ export default function Canvas({roomId}:{roomId:string}){
         if(typeof roomId!=="string"){
          return; 
         }
-        initDraw(canvas,roomId,Socket);
+        initDraw(canvas,roomId,socket);
     }
 
   },[canvasRef])

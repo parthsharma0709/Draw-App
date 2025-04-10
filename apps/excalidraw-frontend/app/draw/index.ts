@@ -24,53 +24,76 @@ type Shape={
   
 
 
-export async function initDraw(canvas:HTMLCanvasElement,roomId:string,socket:WebSocket){
-    const existingShapes:Shape[]= await getExistingShapes(roomId);
-    const ctx= canvas.getContext("2d");
-    if(!ctx){
+export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
+    const existingShapes: Shape[] = await getExistingShapes(roomId);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
         return;
     }
 
-     clearCanvas(existingShapes,canvas,ctx);
-    // ctx.strokeRect(25,54,100,100);
-     ctx.fillStyle="rgba(0,0,0)"
-ctx.fillRect(0,0,canvas.width,canvas.height);
-           
-   clearCanvas(existingShapes,canvas,ctx);
-    let clicked=false;
-    let startX=0;
-    let startY=0;
-    canvas.addEventListener("mousedown",(e)=>{
-        clicked=true;
-        startX= e.clientX;
-        startY=e.clientY;
-    })
-    canvas.addEventListener("mouseup",(e)=>{
-        clicked=false;
-        const height= e.clientY-startY;
-        const width= e.clientX-startX;
-        existingShapes.push({
-            type:"rect",
-            x:startX,
-            y:startY,
+    socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === "chat") {
+            const parsedShape = JSON.parse(message.message);
+            existingShapes.push(parsedShape);
+            clearCanvas(existingShapes, canvas, ctx);
+        }
+    }
+
+    clearCanvas(existingShapes, canvas, ctx);
+    ctx.fillStyle = "rgba(0,0,0)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    clearCanvas(existingShapes, canvas, ctx);
+    let clicked = false;
+    let startX = 0;
+    let startY = 0;
+
+    canvas.addEventListener("mousedown", (e) => {
+        clicked = true;
+        startX = e.clientX;
+        startY = e.clientY;
+    });
+
+    canvas.addEventListener("mouseup", (e) => {
+        clicked = false;
+        const height = e.clientY - startY;
+        const width = e.clientX - startX;
+        const shape: Shape = {
+            type: "rect",
+            x: startX,
+            y: startY,
             width,
             height
-        })
-    })
+        };
+        existingShapes.push(shape);
 
-    canvas.addEventListener("mousemove",(e)=>{
-        if(clicked){
-            const height= e.clientY-startY;
-            const width= e.clientX-startX;
-           
-            clearCanvas(existingShapes,canvas,ctx);
-            ctx.strokeStyle= "rgba(255,255,255)";
-            ctx.strokeRect(startX,startY,width,height)
-
+        // Check WebSocket state before sending
+        if (socket.readyState === WebSocket.OPEN) {
+            console.log("message is sending")
+            socket.send(JSON.stringify({
+                type: "chat",
+                message: JSON.stringify({ shape }),
+                roomId
+                   
+            }));
+        } else {
+            console.warn("WebSocket is not open, cannot send message");
         }
-     
-    })
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+        if (clicked) {
+            const height = e.clientY - startY;
+            const width = e.clientX - startX;
+
+            clearCanvas(existingShapes, canvas, ctx);
+            ctx.strokeStyle = "rgba(255,255,255)";
+            ctx.strokeRect(startX, startY, width, height);
+        }
+    });
 }
+
 
 
 function clearCanvas(existingShapes:Shape[],canvas:HTMLCanvasElement,ctx:CanvasRenderingContext2D){
@@ -96,7 +119,7 @@ async function getExistingShapes(roomId:string){
     const messages= response.data.texts;
     const shapes= messages.map((msg: { message: string; })=>{
         const messageData= JSON.parse(msg.message);
-        return messageData;
+        return messageData.shape;
     });
     return shapes;
 
