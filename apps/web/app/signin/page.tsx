@@ -1,17 +1,17 @@
 "use client"
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input-box";
 import axios from "axios";
-import { useRef } from "react"
+import { useState } from "react"
 
 export default function SignIn(){
     
-    const emailRef= useRef<HTMLInputElement>(null);
-    const passwordRef= useRef<HTMLInputElement>(null);
-   
+    const [email,setEmail]= useState("");
+        const [password,setPassword]= useState("");
 
 
      async function SignInButton(){
-        const email= emailRef.current?.value;
-        const password= passwordRef.current?.value;
+        
       
 
         try{
@@ -29,12 +29,12 @@ export default function SignIn(){
       
     }
 
-    return <div style={{width:"100vw", height:"100vh",display:"flex",justifyContent:"center",alignItems:"center"}}>
-              <div style={{display:"flex", flexDirection:"column", width:"500px",height:'500px', gap:"10px", border:"1px solid black", padding:"4px"}}>
-        <input ref={emailRef} type="text" placeholder="email" style={{padding:"4px"}} />
-        <input ref={passwordRef} type="password" placeholder="password" style={{padding:"4px"}} />
+    return <div>
+              <div>
+              <Input  type="text" placeholder="email" label={"Email"} onChange={(e) => setEmail(e.target.value)} />
+              <Input  type="password" placeholder="password" label={"Password"} onChange={(e) => setPassword(e.target.value)}  />
        
-        <button style={{padding:"4px"}} onClick={SignInButton} >SignIN</button>
+        <Button text="SignIn" onClick={SignInButton} />
     </div>
     </div>
 }

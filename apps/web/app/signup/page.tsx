@@ -1,23 +1,21 @@
 "use client"
+import { Button } from "@repo/ui/button";
+import { Input } from "@repo/ui/input-box";
 import axios from "axios";
-import { useRef } from "react"
+import { useState } from "react"
 
 export default function SignUp(){
     
-    const emailRef= useRef<HTMLInputElement>(null);
-    const passwordRef= useRef<HTMLInputElement>(null);
-    const nameRef= useRef<HTMLInputElement>(null);
-    const photoRef= useRef<HTMLInputElement>(null);
-
+    const [email,setEmail]= useState("");
+    const [password,setPassword]= useState("");
+    const [name, setName]= useState("");
+    const [photo, setPhoto]= useState("");
 
      async function SignUpButton(){
-        const email= emailRef.current?.value;
-        const password= passwordRef.current?.value;
-        const name= nameRef.current?.value;
-        const photo= photoRef.current?.value;
+      
 
         try{
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            
             const response= await axios.post("http://localhost:3001/api/v1/user/signup",{
                 email,
                 password,
@@ -33,12 +31,12 @@ export default function SignUp(){
     }
 
     return <div style={{width:"100vw", height:"100vh",display:"flex",justifyContent:"center",alignItems:"center"}}>
-              <div style={{display:"flex", flexDirection:"column", width:"500px",height:'500px', gap:"10px", border:"1px solid black", padding:"4px"}}>
-        <input ref={emailRef} type="text" placeholder="email" style={{padding:"4px"}} />
-        <input ref={passwordRef} type="password" placeholder="password" style={{padding:"4px"}} />
-        <input ref={nameRef} type="text" placeholder="name" style={{padding:"4px"}}/>
-        <input ref={photoRef} type="text" placeholder="photo_url" style={{padding:"4px"}} />
-        <button style={{padding:"4px"}} onClick={SignUpButton} >Signup</button>
+              <div>
+        <Input  type="text" placeholder="email" label={"Email"} onChange={(e) => setEmail(e.target.value)} />
+        <Input  type="password" placeholder="password" label={"Password"} onChange={(e) => setPassword(e.target.value)}  />
+        <Input  type="text" placeholder="name" label={"Name"} onChange={(e)=>setName(e.target.value)}  />
+        <Input  type="text" placeholder="photo_url" label={"Photo_URL"} onChange={(e)=>setPhoto(e.target.value)} />
+        <Button text="SignUp" onClick={SignUpButton} />
     </div>
     </div>
 }
