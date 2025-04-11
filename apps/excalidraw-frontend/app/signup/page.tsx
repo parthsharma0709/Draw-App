@@ -3,6 +3,7 @@
 import { Button } from "@repo/ui/button";
 import { Input } from "@repo/ui/input-box";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface SignUpResponse {
@@ -14,6 +15,7 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
+  const router = useRouter();
 
   async function SignUpButton() {
     try {
@@ -26,6 +28,7 @@ export default function SignUp() {
 
       if (response.data.message === "you have signed up successfully") {
         alert("Signed up successfully!");
+        router.push('/signin')
       } else {
         alert(response.data.message);
       }

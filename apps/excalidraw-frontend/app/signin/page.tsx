@@ -3,6 +3,7 @@
 import { Button } from "@repo/ui/button";
 import { Input } from "@repo/ui/input-box";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface SignInSuccess {
@@ -21,6 +22,7 @@ type SignInProps = SignInSuccess | SignInFail;
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router= useRouter();
 
   async function SignInButton() {
     try {
@@ -32,6 +34,7 @@ export default function SignIn() {
       if ("token" in response.data) {
         localStorage.setItem("token", response.data.token);
         alert("Signed in successfully");
+        router.push('/dashboard')
       } else {
         alert("Sign-in failed: " + response.data.message);
       }
