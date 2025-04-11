@@ -1,4 +1,4 @@
-import  express , {Request, Response} from "express";
+import  express , {Request, response, Response} from "express";
 const app =express();
 app.use(express.json());
 import { JWT_SECRET } from "@repo/backend-common/config"
@@ -148,11 +148,51 @@ const getIdHandler= async (req:Request, res:Response):Promise<void> =>{
 }
 
 
+const getDetailsHandler = async(req:Request,res:Response):Promise<void> =>{
+    const userId =req.userId;
+    const user= await prismaClient.user.findUnique({
+        where :{id:userId}
+    });
+    if(!user){
+        return;
+    }
+    res.status(200).json({
+        message:"here is your user details ",
+        name:user.name,
+        email:user.email,
+        photo_url:user.photo
+    })
+}
+
+const UserRoomsHandler= async (req:Request,res:Response):Promise<void> =>{
+    const adminId= req.userId;
+    const filter= req.query.filter?.toString() || " ";
+    const Rooms= await prismaClient.room.findMany({
+        where:{adminId:adminId,
+            slug:{
+                contains:filter,
+                mode:"insensitive"
+            }
+        }
+
+    });
+    if(!Rooms){
+        return;
+    }
+    res.status(200).json({
+        message:"here are your rooms ",
+        rooms:Rooms
+    })
+}
+
+
 app.post('/api/v1/user/signup',SignUpHandler);
 app.post('/api/v1/user/signin',SignInHandler);
 app.post('/api/v1/user/room',userAuthentication, RoomHandler);
 app.get('/api/v1/user/chats/:roomId' ,messageHandlers);
-app.get('/api/v1/user/room/:slug',  getIdHandler)
+app.get('/api/v1/user/room/:slug',  getIdHandler);
+app.get('/api/v1/user/userDetails',userAuthentication,getDetailsHandler);
+app.get('/api/v1/user/existingRooms', userAuthentication,UserRoomsHandler)
 app.listen(3001,()=>{
     console.log("http server is  listening on port:3001")
 })
