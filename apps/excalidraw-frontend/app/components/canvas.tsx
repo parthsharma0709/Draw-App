@@ -2,7 +2,8 @@
 import { useEffect, useRef} from "react"
 import { initDraw } from "../draw";
 
-
+import {Circle, Pencil, RectangleHorizontalIcon } from "lucide-react";
+import { IconButton } from "./icons";
 
 
 export default function Canvas({roomId,socket}:{roomId:string,socket:WebSocket}){
@@ -20,7 +21,22 @@ export default function Canvas({roomId,socket}:{roomId:string,socket:WebSocket})
 
   },[canvasRef])
 
-    return <div>
-   <canvas ref={canvasRef} width={1530} height={715} ></canvas>
+    return <div className="overflow-hidden static h-100vh">
+    
+   <canvas ref={canvasRef} width={window.innerWidth} height={window.innerHeight} ></canvas>
+ <TopBar/>
     </div>
+}
+
+function TopBar(){
+  return (
+    <div className="absolute top-0 left-0 p-3 w-full px-8 py-3 flex justify-evenly items-center bg-slate-400 shadow-md">
+    
+    <IconButton icon={<Pencil/>} onClick={()=>{}}/>
+    <IconButton icon={<RectangleHorizontalIcon/>} onClick={()=>{}}/>
+    <IconButton icon={<Circle/>} onClick={()=>{}}/>
+    
+    
+    </div>
+  )
 }
