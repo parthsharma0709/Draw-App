@@ -12,18 +12,6 @@ type Shape={
     radius:number
 }
 
-// interface ChatMessage {
-//     message: Shape;
-    
-//   }
-  
-//   interface ChatResponse {
-//     messages: string;
-//     texts: ChatMessage[];
-//   }
-  
-
-
 export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     const existingShapes: Shape[] = await getExistingShapes(roomId);
     const ctx = canvas.getContext("2d");
@@ -34,11 +22,13 @@ export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket
     socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
         if (message.type === "chat") {
-            const parsedShape = JSON.parse(message.message);
+            const parsed = JSON.parse(message.message);
+            const parsedShape = parsed.shape;
             existingShapes.push(parsedShape);
             clearCanvas(existingShapes, canvas, ctx);
         }
     }
+    
 
     clearCanvas(existingShapes, canvas, ctx);
     ctx.fillStyle = "rgba(0,0,0)";
@@ -112,7 +102,7 @@ async function getExistingShapes(roomId:string){
     const response = await axios.get(`http://localhost:3001/api/v1/user/chats/${roomId}`);
 
     if (!response.data) {
-        return;
+        return [];
     }
 
 

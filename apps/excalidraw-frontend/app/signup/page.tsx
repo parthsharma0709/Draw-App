@@ -4,6 +4,10 @@ import { Input } from "@repo/ui/input-box";
 import axios from "axios";
 import { useState } from "react"
 
+interface SignUpResponse {
+    message: string;
+  }
+
 export default function SignUp(){
     
     const [email,setEmail]= useState("");
@@ -16,13 +20,20 @@ export default function SignUp(){
 
         try{
             
-            const response= await axios.post("http://localhost:3001/api/v1/user/signup",{
+            const response= await axios.post<SignUpResponse>("http://localhost:3001/api/v1/user/signup",{
                 email,
                 password,
                 name,
                 photo
             });
-            alert("signed up successfully")
+
+            if(response.data.message==="you have signed up successfully"){
+                alert("signed up successfull");
+            }
+            else{
+                alert(response.data.message);
+            }
+            
         }
         catch(error){
             console.error("error while signup",error)

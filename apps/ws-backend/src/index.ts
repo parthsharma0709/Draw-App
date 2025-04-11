@@ -8,15 +8,17 @@ import { prismaClient } from "@repo/db/client";
 const wss= new WebSocketServer({port:8080});
 
 
-function CheckUser(token:string):string | null {
-    const decoded= jwt.verify(token , JWT_SECRET) as JwtPayload;
-
-    if(!decoded || !(decoded as JwtPayload).userId){
+function CheckUser(token: string): string | null {
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+        if (!decoded || !decoded.userId) return null;
+        return decoded.userId;
+    } catch (err) {
+        console.error("JWT Error:", err); // logs TokenExpiredError
         return null;
     }
-    return decoded.userId;
-
 }
+
 
 // ugly way to state management
 interface User {
