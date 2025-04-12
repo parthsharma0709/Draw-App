@@ -164,7 +164,7 @@ function RoomCard({ room }: { room: Room }) {
   const roomId = room.id;
   return (
     <div className="flex justify-between items-center bg-slate-800 px-4 py-3 rounded-lg shadow hover:bg-slate-700 transition">
-      <div className="text-white text-md font-medium">{room.slug}</div>
+      <div className="text-white text-md font-medium">{room.slug}-{roomId}</div>
       <Button
         text="Continue"
         className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1 rounded-md"

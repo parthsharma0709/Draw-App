@@ -44,28 +44,28 @@ export default function SignUp() {
 
         <div className="space-y-4">
           <Input
-            classname="p-2"
+            classname="p-2 border-2"
             type="email"
             placeholder="Email"
             label="Email"
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
-            classname="p-2"
+            classname="p-2 border"
             type="password"
             placeholder="Password"
             label="Password"
             onChange={(e) => setPassword(e.target.value)}
           />
           <Input
-            classname="p-2"
+            classname="p-2 border"
             type="text"
             placeholder="John Doe"
             label="Name"
             onChange={(e) => setName(e.target.value)}
           />
           <Input
-            classname="p-2"
+            classname="p-2 border"
             type="text"
             placeholder="https://example.com/profile.jpg"
             label="Photo URL"
