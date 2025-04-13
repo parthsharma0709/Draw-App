@@ -2,7 +2,7 @@ import  express , {Request, response, Response} from "express";
 const app =express();
 app.use(express.json());
 import { JWT_SECRET } from "@repo/backend-common/config"
-import {z} from "zod"
+import {string, z} from "zod"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { userAuthentication } from "./auth/user-auth";
@@ -30,6 +30,7 @@ const hashPassword= async(password:string): Promise<string> =>{
 const SignUpHandler= async (req:Request,res:Response) : Promise<void> =>{
      const validateData= SignUpSchema.safeParse(req.body);
      if(!validateData.success){
+        console.log(validateData.error.flatten());
         res.status(403).json({message:"Please enter valid Credintials"});
         return;
      }
@@ -217,12 +218,45 @@ const removeRecentShapeHandler = async (req: Request, res: Response): Promise<vo
       res.json({
         message: "Shape deleted successfully.",
         deleted_id: shapeId,
+        deleted_shape:JSON.parse(existingShape.message).shape
       });
     } catch (error) {
       console.error("Error in removeRecentShapeHandler:", error);
       res.status(500).json({ message: "Server error", error });
     }
   };
+
+  const addShapeHandler= async (req:Request,res:Response):Promise<void> =>{
+    const roomId= Number(req.body.roomId);
+    const shapeToAdd= JSON.stringify({ shape: req.body.shapeToAdd });
+    
+    const room= await prismaClient.room.findUnique({
+        where: {id:roomId}
+    });
+    if(!room){
+        res.json({message:"Room with this roomId doesn't exists"});
+        return;
+    }
+    const userId= room.adminId;
+   try{
+    const addedShape= await prismaClient.chat.create({
+        data:{
+            userId:userId,
+            roomId:roomId,
+            message:shapeToAdd
+        }
+    })
+    res.json({message:"shape added successfully",
+        addedShape:addedShape,
+        theShape:JSON.parse(addedShape.message).shape
+    })
+   }
+   catch(error){
+    console.error("Error in adding shape", error);
+    res.status(500).json({message:"Shape not added"})
+   }
+
+  }
   
 
 app.post('/api/v1/user/signup',SignUpHandler);
@@ -233,6 +267,7 @@ app.get('/api/v1/user/room/:slug', userAuthentication,  getIdHandler);
 app.get('/api/v1/user/userDetails',userAuthentication,getDetailsHandler);
 app.get('/api/v1/user/existingRooms', userAuthentication,UserRoomsHandler)
 app.get('/api/v1/user/deleteChat/:roomId',userAuthentication,removeRecentShapeHandler);
+app.post('/api/v1/user/addShape',userAuthentication,addShapeHandler);
 app.listen(3001,()=>{
     console.log("http server is  listening on port:3001")
 })
