@@ -99,6 +99,8 @@ wss.on('connection',function connection(ws, req:IncomingMessage){
                 }
             });
 
+           
+
          // broadcasting the message
             users.forEach(user =>{
                 if(user.rooms.includes(roomId)){
@@ -110,6 +112,24 @@ wss.on('connection',function connection(ws, req:IncomingMessage){
                 }
             })
          }
+
+        
+
+         if(paredData.type==="sync"){
+            const roomId= paredData.roomId;
+            const payload= paredData.payload;
+            users.forEach(user =>{
+              if(user.rooms.includes(roomId)){
+                user.ws.send(JSON.stringify({
+                  type: "sync",
+                  payload
+                }));
+              }
+            });
+          }
+          
+
+
 
 
     });
