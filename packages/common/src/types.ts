@@ -13,7 +13,7 @@ export const passwordSchema= z.string()
 .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character");
 
 export const nameSchema= z.string().min(3,"FirstName must have at least 3 characters").max(20);
-const photoSchema= z.string().min(3).max(50);
+const photoSchema= z.string().min(3).max(1000);
 
 
 export const SignUpSchema= z.object({

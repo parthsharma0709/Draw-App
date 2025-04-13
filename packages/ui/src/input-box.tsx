@@ -6,14 +6,15 @@ interface InputProps {
   type: string;
   placeholder: string;
   classname?: string;
+  textColor?:string
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const Input = ({ label, type, placeholder, classname = "", onChange }: InputProps) => {
+export const Input = ({ label, textColor, type, placeholder, classname = "", onChange }: InputProps) => {
   return (
     <div className="flex flex-col gap-3">
       
-      <label className="text-lg font-semibold text-gray-700">{label}</label>
+      <label className={`text-lg font-semibold  ${textColor}` }>{label}</label>
       
 
       <input

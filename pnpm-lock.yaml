@@ -21,11 +21,14 @@ importers:
   apps/excalidraw-frontend:
     dependencies:
       '@types/axios':
-        specifier: ^0.9.36
-        version: 0.9.36
+        specifier: ^0.14.4
+        version: 0.14.4
       axios:
         specifier: ^1.8.4
         version: 1.8.4
+      lucide-react:
+        specifier: ^0.487.0
+        version: 0.487.0(react@19.0.0)
       next:
         specifier: 15.2.4
         version: 15.2.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -941,9 +944,6 @@ packages:
   '@types/axios@0.14.4':
     resolution: {integrity: sha512-9JgOaunvQdsQ/qW2OPmE5+hCeUB52lQSolecrFrthct55QekhmXEwT203s20RL+UHtCQc15y3VXpby9E7Kkh/g==}
     deprecated: This is a stub types definition. axios provides its own type definitions, so you do not need this installed.
-
-  '@types/axios@0.9.36':
-    resolution: {integrity: sha512-NLOpedx9o+rxo/X5ChbdiX6mS1atE4WHmEEIcR9NLenRVa5HoVjAvjafwU3FPTqnZEstpoqCaW7fagqSoTDNeg==}
 
   '@types/bcrypt@5.0.2':
     resolution: {integrity: sha512-6atioO8Y75fNcbmj0G7UjI9lXN2pQ/IGJ2FWT4a/btd0Lk9lQalHLKhkgKVZ3r+spnmWUKfbMi1GEe9wyHQfNQ==}
@@ -2544,6 +2544,11 @@ packages:
   lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
+
+  lucide-react@0.487.0:
+    resolution: {integrity: sha512-aKqhOQ+YmFnwq8dWgGjOuLc8V1R9/c/yOd+zDY4+ohsR2Jo05lSGc3WsstYPIzcTpeosN7LoCkLReUUITvaIvw==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
@@ -4170,8 +4175,6 @@ snapshots:
       axios: 1.8.4
     transitivePeerDependencies:
       - debug
-
-  '@types/axios@0.9.36': {}
 
   '@types/bcrypt@5.0.2':
     dependencies:
@@ -6069,6 +6072,10 @@ snapshots:
   lru-cache@10.4.3: {}
 
   lru-cache@7.18.3: {}
+
+  lucide-react@0.487.0(react@19.0.0):
+    dependencies:
+      react: 19.0.0
 
   make-dir@3.1.0:
     dependencies:
