@@ -1,11 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Circle, Minus, Pencil, RectangleHorizontalIcon, Undo2 } from "lucide-react";
+import { Circle, Minus, Pencil, RectangleHorizontalIcon, Shapes, Undo2 } from "lucide-react";
 import { IconButton } from "./icons";
-import { Game } from "../draw/Game";
+import { Game, Shape } from "../draw/Game";
+import axios from "axios";
+import { getExistingShapes } from "../draw/getshapes";
 
 export type Tool = "circle" | "rect" | "pencil"|"line";
+
+interface deletedProps{
+  message:string,
+  deleted_id :number
+}
 
 export default function Canvas({
   roomId,
@@ -19,6 +26,24 @@ export default function Canvas({
   const [game, setGame] = useState<Game>();
 
   // Update tool in Game when selectedTool changes
+
+async function Undo(){
+         const response= await axios.get<deletedProps>(`http://localhost:3001/api/v1/user/deleteChat/${roomId}`);
+         if(response.data.message==="Shape deleted successfully."){
+          const shapesAfterUndo:Shape[] = await getExistingShapes(roomId);
+          game?.setShapes(shapesAfterUndo);
+          socket.send(JSON.stringify({
+            type:"sync",
+            roomId,
+            payload :{
+              roomId,
+              shapes: shapesAfterUndo
+            }
+          }))
+          game?.drawAll();
+         }
+}
+
   useEffect(() => {
     game?.setTool(selectedTool);
   }, [selectedTool, game]);
@@ -48,7 +73,7 @@ export default function Canvas({
       <TopBar
         selectedTool={selectedTool}
         setSelectedTool={setSelectedTool}
-        onUndo={() => game?.Undo()}
+        onUndo={Undo}
       />
     </div>
   );
@@ -92,6 +117,7 @@ function TopBar({
      </div>
      <div className="cursor-pointer">
      <IconButton activated={false} icon={<Undo2 />} onClick={onUndo} />
+
      </div>
      
     </div>
