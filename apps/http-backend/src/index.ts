@@ -125,7 +125,7 @@ const messageHandlers= async (req:Request,res:Response):Promise<void> =>{
         orderBy:{
             id:"desc"
         },
-        take:50
+        take:1000
     });
     
     res.json({messages:"here are your messages", "texts": yourMessages})
@@ -184,7 +184,46 @@ const UserRoomsHandler= async (req:Request,res:Response):Promise<void> =>{
         rooms:Rooms
     })
 }
-
+const removeRecentShapeHandler = async (req: Request, res: Response): Promise<void> => {
+    const roomId = Number(req.params.roomId);
+  
+    try {
+      const response = await prismaClient.chat.findFirst({
+        where: { roomId },
+        orderBy: { id: "desc" },
+      });
+  
+      const shapeId = response?.id;
+  
+      if (!shapeId) {
+        res.status(404).json({ message: "No shape found to delete." });
+        return;
+      }
+  
+      // Check again if the record exists (extra safety)
+      const existingShape = await prismaClient.chat.findUnique({
+        where: { id: shapeId },
+      });
+  
+      if (!existingShape) {
+         res.status(404).json({ message: "Shape already deleted." });
+         return ;
+      }
+  
+      await prismaClient.chat.delete({
+        where: { id: shapeId },
+      });
+  
+      res.json({
+        message: "Shape deleted successfully.",
+        deleted_id: shapeId,
+      });
+    } catch (error) {
+      console.error("Error in removeRecentShapeHandler:", error);
+      res.status(500).json({ message: "Server error", error });
+    }
+  };
+  
 
 app.post('/api/v1/user/signup',SignUpHandler);
 app.post('/api/v1/user/signin',SignInHandler);
@@ -193,6 +232,7 @@ app.get('/api/v1/user/chats/:roomId' ,messageHandlers);
 app.get('/api/v1/user/room/:slug',  getIdHandler);
 app.get('/api/v1/user/userDetails',userAuthentication,getDetailsHandler);
 app.get('/api/v1/user/existingRooms', userAuthentication,UserRoomsHandler)
+app.get('/api/v1/user/deleteChat/:roomId',userAuthentication,removeRecentShapeHandler);
 app.listen(3001,()=>{
     console.log("http server is  listening on port:3001")
 })
