@@ -28,7 +28,13 @@ export default function Canvas({
   // Update tool in Game when selectedTool changes
 
 async function Undo(){
-         const response= await axios.get<deletedProps>(`http://localhost:3001/api/v1/user/deleteChat/${roomId}`);
+         const response= await axios.get<deletedProps>(`http://localhost:3001/api/v1/user/deleteChat/${roomId}`,
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+         );
          if(response.data.message==="Shape deleted successfully."){
           const shapesAfterUndo:Shape[] = await getExistingShapes(roomId);
           game?.setShapes(shapesAfterUndo);
