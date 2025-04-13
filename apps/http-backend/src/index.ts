@@ -228,8 +228,8 @@ const removeRecentShapeHandler = async (req: Request, res: Response): Promise<vo
 app.post('/api/v1/user/signup',SignUpHandler);
 app.post('/api/v1/user/signin',SignInHandler);
 app.post('/api/v1/user/room',userAuthentication, RoomHandler);
-app.get('/api/v1/user/chats/:roomId' ,messageHandlers);
-app.get('/api/v1/user/room/:slug',  getIdHandler);
+app.get('/api/v1/user/chats/:roomId' , userAuthentication,messageHandlers);
+app.get('/api/v1/user/room/:slug', userAuthentication,  getIdHandler);
 app.get('/api/v1/user/userDetails',userAuthentication,getDetailsHandler);
 app.get('/api/v1/user/existingRooms', userAuthentication,UserRoomsHandler)
 app.get('/api/v1/user/deleteChat/:roomId',userAuthentication,removeRecentShapeHandler);
