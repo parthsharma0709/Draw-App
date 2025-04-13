@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Circle, Minus, Pencil, RectangleHorizontalIcon, Shapes, Undo2 } from "lucide-react";
+import { Circle, Minus, Pencil, RectangleHorizontalIcon, Redo2, Shapes, Undo2 } from "lucide-react";
 import { IconButton } from "./icons";
 import { Game, Shape } from "../draw/Game";
 import axios from "axios";
@@ -11,7 +11,8 @@ export type Tool = "circle" | "rect" | "pencil"|"line";
 
 interface deletedProps{
   message:string,
-  deleted_id :number
+  deleted_id :number,
+  deleted_shape:Shape
 }
 
 export default function Canvas({
@@ -24,6 +25,32 @@ export default function Canvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [selectedTool, setSelectedTool] = useState<Tool>("circle");
   const [game, setGame] = useState<Game>();
+  const deletedShapeRef = useRef<Shape | null>(null);
+  const undoStackRef = useRef<Shape[]>([]);
+  const redoStackRef = useRef<Shape[]>([]);
+
+
+
+
+  useEffect(() => {
+    const savedUndo = localStorage.getItem("undoStack");
+    const savedRedo = localStorage.getItem("redoStack");
+  
+    try {
+      if (savedUndo) undoStackRef.current = JSON.parse(savedUndo);
+      if (savedRedo) redoStackRef.current = JSON.parse(savedRedo);
+    } catch (err) {
+      console.error("Error loading undo/redo stacks:", err);
+    }
+  }, []);
+  
+  function syncUndoRedoToLocalStorage() {
+    localStorage.setItem("undoStack", JSON.stringify(undoStackRef.current));
+    localStorage.setItem("redoStack", JSON.stringify(redoStackRef.current));
+  }
+  
+
+
 
   // Update tool in Game when selectedTool changes
 
@@ -37,6 +64,12 @@ async function Undo(){
          );
          if(response.data.message==="Shape deleted successfully."){
           const shapesAfterUndo:Shape[] = await getExistingShapes(roomId);
+          
+          deletedShapeRef.current = response.data.deleted_shape;
+          undoStackRef.current.push(deletedShapeRef.current)
+          syncUndoRedoToLocalStorage(); 
+          console.log(deletedShapeRef.current)
+
           game?.setShapes(shapesAfterUndo);
           socket.send(JSON.stringify({
             type:"sync",
@@ -48,6 +81,43 @@ async function Undo(){
           }))
           game?.drawAll();
          }
+}
+
+async function  Redo() {
+  const shapesBeforeRedo:Shape[] = await getExistingShapes(roomId);
+  console.log(shapesBeforeRedo);
+  const shapeToRedo= undoStackRef.current.pop();
+  if (!shapeToRedo) {
+    alert("No shape to redo");
+    return;
+  }
+  redoStackRef.current.push(shapeToRedo!);
+  syncUndoRedoToLocalStorage(); 
+  
+const response= await axios.post("http://localhost:3001/api/v1/user/addShape",{
+  roomId,
+  shapeToAdd:shapeToRedo
+},{
+  headers :{
+    Authorization:localStorage.getItem("token")
+  }
+})
+   console.log("added shaped is :", response.data.theShape)
+  const shapesAfterRedo: Shape[] = await getExistingShapes(roomId);
+
+  console.log(shapesAfterRedo);
+  
+  game?.setShapes(shapesAfterRedo);
+  socket.send(JSON.stringify({
+    type:"sync",
+    roomId,
+    payload :{
+      roomId,
+      shapes: shapesAfterRedo
+    }
+  }))
+  game?.drawAll();
+  
 }
 
   useEffect(() => {
@@ -80,6 +150,7 @@ async function Undo(){
         selectedTool={selectedTool}
         setSelectedTool={setSelectedTool}
         onUndo={Undo}
+        onRedo={Redo}
       />
     </div>
   );
@@ -89,14 +160,16 @@ function TopBar({
   selectedTool,
   setSelectedTool,
   onUndo,
+  onRedo
 }: {
   selectedTool: Tool;
   setSelectedTool: (s: Tool) => void;
   onUndo: () => void;
+  onRedo:()=>void 
 }) {
   return (
-    <div className="absolute  top-0 left-0 w-full px-8 py-3 flex justify-evenly items-center bg-slate-400 shadow-md">
-     
+    <div className="absolute  top-0 left-0 w-full px-2 py-3 flex justify-evenly items-center bg-slate-400 shadow-md">
+     <h1 className="text-2xl -ml-12 font-bold text-emerald-900">DrawTogether</h1>
      <div className="cursor-pointer"> <IconButton 
         activated={selectedTool === "pencil"}
         icon={<Pencil />}
@@ -123,9 +196,9 @@ function TopBar({
      </div>
      <div className="cursor-pointer">
      <IconButton activated={false} icon={<Undo2 />} onClick={onUndo} />
-
-     </div>
      
+     </div>
+     <div className="cursor-pointer"><IconButton activated={false} icon={<Redo2/>} onClick={onRedo}/></div>
     </div>
   );
 }
