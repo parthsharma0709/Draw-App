@@ -257,6 +257,28 @@ const removeRecentShapeHandler = async (req: Request, res: Response): Promise<vo
    }
 
   }
+
+  const ClearChatHandler= async (req:Request, res:Response):Promise<void> =>{
+    const roomId= Number(req.params.roomId);
+    if(!roomId){
+        res.json({message:"roomId doesn't received"});
+        return;
+    }
+   try{
+    const deleteChat= await prismaClient.chat.deleteMany({
+        where:{roomId:roomId}
+    });
+    res.json({
+        message:"Chat History deleted",
+        ChatHistory:deleteChat
+    })
+   }
+   catch(error){
+    console.error("Error during chat deletion", error);
+    res.status(500).json({message:"chat not deleted at all"})
+   }
+    
+  }
   
 
 app.post('/api/v1/user/signup',SignUpHandler);
@@ -268,6 +290,7 @@ app.get('/api/v1/user/userDetails',userAuthentication,getDetailsHandler);
 app.get('/api/v1/user/existingRooms', userAuthentication,UserRoomsHandler)
 app.get('/api/v1/user/deleteChat/:roomId',userAuthentication,removeRecentShapeHandler);
 app.post('/api/v1/user/addShape',userAuthentication,addShapeHandler);
+app.delete('/api/v1/user/deleteChatHistory/:roomId',userAuthentication,ClearChatHandler)
 app.listen(3001,()=>{
     console.log("http server is  listening on port:3001")
 })
