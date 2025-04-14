@@ -5,6 +5,7 @@ import { Input } from "@repo/ui/input-box";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+
 interface RoomProps {
   message: string;
   roomId: number;
@@ -113,22 +114,25 @@ export default function DashBoard() {
       <nav className="w-full px-6 py-4 bg-slate-900 shadow-md flex justify-between items-center">
         <h1 className="text-2xl font-bold flex text-emerald-400">DrawTogether </h1>
         <div className="flex gap-4 items-center">
-          <div className="rounded-full h-12 w-12 flex justify-center items-center font-bold text-xl cursor-pointer text-black bg-white">
+      
+
+         <div className="rounded-full h-14 w-14 flex justify-center items-center font-bold text-xl cursor-pointer text-black bg-white">
            
-          {picture ? (
-  <img
-    src={picture}
-    alt="User profile"
-    className="h-12 w-12 rounded-full object-cover border-2 border-emerald-400"
-  />
-) : (
-  <div className="h-12 w-12 rounded-full bg-white text-black flex items-center justify-center font-bold">
-    {userName?.charAt(0) || "?"}
-  </div>
-)}
-
-
-          </div>
+           {picture ? (
+   <img
+     src={picture}
+     alt="User profile"
+     className="h-14 w-14 rounded-full object-cover border-2 border-emerald-400"
+   />
+ ) : (
+   <div className="h-14 w-14 rounded-full bg-white text-black flex items-center justify-center font-bold">
+     {userName?.charAt(0) || "?"}
+   </div>
+ )}
+ 
+ 
+           </div>
+        
 
           <Button
             text="Log Out"

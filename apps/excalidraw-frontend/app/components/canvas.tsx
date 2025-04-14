@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Circle, Minus, Pencil, RectangleHorizontalIcon, Redo2, Shapes, Undo2 } from "lucide-react";
+import { Circle, DeleteIcon, Minus, Pencil, RectangleHorizontalIcon, Redo2, Shapes, Undo2 } from "lucide-react";
 import { IconButton } from "./icons";
 import { Game, Shape } from "../draw/Game";
 import axios from "axios";
@@ -13,6 +13,13 @@ interface deletedProps{
   message:string,
   deleted_id :number,
   deleted_shape:Shape
+}
+interface chatHistory{
+  count:number
+}
+interface ClearProps{
+  message:string,
+  ChatHistory:chatHistory
 }
 
 export default function Canvas({
@@ -120,6 +127,29 @@ const response= await axios.post("http://localhost:3001/api/v1/user/addShape",{
   
 }
 
+async function clearCanvas() {
+  const response = await axios.delete<ClearProps>(`http://localhost:3001/api/v1/user/deleteChatHistory/${roomId}`, {
+    headers: {
+      Authorization: localStorage.getItem("token")
+    }
+  });
+  if(response.data.ChatHistory.count===0){
+    alert("Nothing to clear");
+    return;
+  }
+  game?.setShapes([]);  
+  game?.drawAll();
+  socket.send(JSON.stringify({
+    type: "sync",
+    roomId,
+    payload: {
+      roomId,
+      shapes: []
+    }
+  }));
+}
+
+
   useEffect(() => {
     game?.setTool(selectedTool);
   }, [selectedTool, game]);
@@ -151,6 +181,7 @@ const response= await axios.post("http://localhost:3001/api/v1/user/addShape",{
         setSelectedTool={setSelectedTool}
         onUndo={Undo}
         onRedo={Redo}
+        onClear={clearCanvas}
       />
     </div>
   );
@@ -160,16 +191,19 @@ function TopBar({
   selectedTool,
   setSelectedTool,
   onUndo,
-  onRedo
+  onRedo,
+  onClear
 }: {
   selectedTool: Tool;
   setSelectedTool: (s: Tool) => void;
   onUndo: () => void;
-  onRedo:()=>void 
+  onRedo:()=>void ;
+  onClear:()=>void;
 }) {
   return (
-    <div className="absolute  top-0 left-0 w-full px-2 py-3 flex justify-evenly items-center bg-slate-400 shadow-md">
-     <h1 className="text-2xl -ml-12 font-bold text-emerald-900">DrawTogether</h1>
+    <div className="absolute  top-0 left-0 w-full px-2 py-3 flex justify-between items-center bg-slate-400 shadow-md">
+     <h1 className="text-2xl font-bold text-emerald-900">DrawTogether</h1>
+     <div className="flex gap-20 mr-10">
      <div className="cursor-pointer"> <IconButton 
         activated={selectedTool === "pencil"}
         icon={<Pencil />}
@@ -199,6 +233,8 @@ function TopBar({
      
      </div>
      <div className="cursor-pointer"><IconButton activated={false} icon={<Redo2/>} onClick={onRedo}/></div>
+     <div className="cursor-pointer"><IconButton activated={false} icon={<DeleteIcon/>} onClick={onClear}/> </div>
+     </div>
     </div>
   );
 }
